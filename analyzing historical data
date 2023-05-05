@@ -1,0 +1,117 @@
+      # Setting up the environment : 
+
+!pip install yfinance
+!pip install bs4
+import yfinance as yf
+import pandas as pd
+import requests
+from bs4 import BeautifulSoup
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+
+Question 1: Use yfinance to Extract Stock Data
+
+Reset the index, save, and display the first five rows of the tesla_data dataframe using the head function. 
+Upload a screenshot of the results and code from the beginning of Question 1 to the results below.
+
+tesla_data.reset_index(inplace=True)
+tesla = yf.Ticker('TSLA')
+tesla_data = tesla.history(period="max")
+tesla_data.head()
+
+
+Question 2: Use Webscraping to Extract Tesla Revenue Data
+
+Display the last five rows of the tesla_revenue dataframe using the tail function. Upload a screenshot of the results
+
+
+
+url = 'https://www.macrotrends.net/stocks/charts/TSLA/tesla/revenue'
+html_data = requests.get(url).text
+soup = BeautifulSoup(html_data,"html5lib")
+tesla_revenue = pd.DataFrame(columns=['Date', 'Revenue'])
+
+for table in soup.find_all('table'):
+
+    if ('Tesla Quarterly Revenue' in table.find('th').text):
+        rows = table.find_all('tr')
+        
+        for row in rows:
+            col = row.find_all('td')
+            
+            if col != []:
+                date = col[0].text
+                revenue = col[1].text.replace(',','').replace('$','')
+
+                tesla_revenue = tesla_revenue.append({"Date":date, "Revenue":revenue}, ignore_index=True)
+tesla_revenue.tail()
+
+
+
+Question 3: Use yfinance to Extract Stock Data
+
+Reset the index, save, and display the first five rows of the gme_data dataframe using the head function. Upload a screenshot of the results and code from the beginning of Question 1 to the results below.
+
+ME = yf.Ticker('GME')
+GME_data = GME.history(period="max")
+GME_data.reset_index(inplace=True)
+GME_data.head()
+
+
+Question 4: Use Webscraping to Extract GME Revenue Data
+
+Display the last five rows of the gme_revenue dataframe using the tail function. Upload a screenshot of the results.
+
+
+GME = yf.Ticker('GME')
+GME_data = GME.history(period="max")
+GME_data.reset_index(inplace=True)
+GME_data.head()
+
+
+Question 4: Use Webscraping to Extract GME Revenue Data
+
+Display the last five rows of the gme_revenue dataframe using the tail function. Upload a screenshot of the results.
+
+
+url = 'https://www.macrotrends.net/stocks/charts/GME/gamestop/revenue'
+html_data = requests.get(url).text
+soup = BeautifulSoup(html_data,"html5lib")
+gme_revenue = pd.DataFrame(columns=['Date', 'Revenue'])
+
+for table in soup.find_all('table'):
+
+    if ('GameStop Quarterly Revenue' in table.find('th').text):
+        rows = table.find_all('tr')
+        
+        for row in rows:
+            col = row.find_all('td')
+            
+            if col != []:
+                date = col[0].text
+                revenue = col[1].text.replace(',','').replace('$','')
+
+                gme_revenue = gme_revenue.append({"Date":date, "Revenue":revenue}, ignore_index=True)
+gme_revenue.tail()
+
+
+Question 5: Plot Tesla Stock Graph
+
+Use the make_graph function to graph the Tesla Stock Data, also provide a title for the graph.
+
+Upload a screenshot of your results.
+
+
+tesla_revenue = tesla_revenue[tesla_revenue['Revenue'].astype(bool)]
+make_graph(tesla_data[['Date','Close']], tesla_revenue, 'Tesla')
+
+
+
+Question 6: Plot GameStop Stock Graph
+
+Use the make_graph function to graph the GameStop Stock Data, also provide a title for the graph.
+
+Upload a screenshot of your results.
+
+
+make_graph(GME_data[['Date','Close']], gme_revenue, 'GameStop')
